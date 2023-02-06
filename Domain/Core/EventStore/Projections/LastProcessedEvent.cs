@@ -9,12 +9,12 @@ public class LastProcessedEvent
     private LastProcessedEvent()
     {
     }
-    
-    public LastProcessedEvent(Guid id, ulong storedEventId)
+
+    public static LastProcessedEvent Create() => new()
     {
-        Id = id;
-        StoredEventId = storedEventId;
-    }
+        Id = Guid.NewGuid(),
+        StoredEventId = 0
+    };
 
     public void UpdateStoredEventId(ulong storedEventId)
     {
