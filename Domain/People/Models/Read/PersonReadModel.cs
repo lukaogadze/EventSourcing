@@ -15,6 +15,9 @@ public class PersonReadModel
     public DateTimeOffset BirthDate { get; private set; }
     public string Hobby { get; private set; }
 
+    private PersonReadModel()
+    {
+    }
 
     public PersonReadModel(
         Guid aggregateId,
