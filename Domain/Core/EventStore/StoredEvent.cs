@@ -6,7 +6,7 @@ namespace Domain.Core.EventStore
     {
         public ulong Id { get; private set; }
         public DateTimeOffset CreateDate { get; private set; }
-        public string Event { get; private set; }
+        public string DomainEvent { get; private set; }
         public ulong Version { get; private set; }
         public Guid AggregateId { get; private set; }
 
@@ -27,7 +27,7 @@ namespace Domain.Core.EventStore
             }
 
             CreateDate = @event.OccurredOn;
-            Event = JsonService.Serialize(@event);
+            DomainEvent = JsonService.Serialize(@event);
 
 
             if (aggregateId == default)

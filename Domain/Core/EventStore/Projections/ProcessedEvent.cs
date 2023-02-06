@@ -9,11 +9,11 @@ public class ProcessedEvent
     
     private ProcessedEvent() {}
     
-    public ProcessedEvent(Guid id, Guid aggregateId, ulong storedEventId, DateTimeOffset createDate)
+    public ProcessedEvent(Guid aggregateId, ulong storedEventId)
     {
-        Id = id;
+        Id = Guid.NewGuid();
         AggregateId = aggregateId;
         StoredEventId = storedEventId;
-        CreateDate = createDate;
+        CreateDate = DateTimeOffset.Now;
     }
 }

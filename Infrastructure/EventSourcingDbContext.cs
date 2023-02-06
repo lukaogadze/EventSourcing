@@ -1,5 +1,6 @@
 using Domain.Core.EventStore;
 using Domain.Core.EventStore.Projections;
+using Domain.People.Models.Read;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
@@ -13,6 +14,8 @@ public class EventSourcingDbContext : DbContext
     public DbSet<LastProcessedEvent> LastProcessedEvents { get; set; }
 
     public DbSet<ProcessedEvent> ProcessedEvents { get; set; }
+
+    public DbSet<PersonReadModel> PersonReadModels { get; set; }
     
     public EventSourcingDbContext(DbContextOptions<EventSourcingDbContext> options) : base(options)
     {
@@ -32,6 +35,9 @@ public class EventSourcingDbContext : DbContext
         
         modelBuilder.Entity<ProcessedEvent>().HasKey(x => x.Id);
         modelBuilder.Entity<ProcessedEvent>().Property(x => x.Id).ValueGeneratedNever();
+        
+        modelBuilder.Entity<LastProcessedEvent>().HasKey(x => x.Id);
+        modelBuilder.Entity<LastProcessedEvent>().Property(x => x.Id).ValueGeneratedNever();
         
         modelBuilder.Entity<LastProcessedEvent>().HasKey(x => x.Id);
         modelBuilder.Entity<LastProcessedEvent>().Property(x => x.Id).ValueGeneratedNever();
