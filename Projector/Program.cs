@@ -22,7 +22,8 @@ public static class Program
         while (true)
         {
             projectorService.ProcessEvents();
-            Thread.Sleep(2000);
+            context.SaveChanges();
+            Thread.Sleep(3000);
         }
     }
 }
