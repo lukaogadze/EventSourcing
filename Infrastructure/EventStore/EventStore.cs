@@ -1,5 +1,6 @@
 using Domain.Core;
 using Domain.Core.EventStore;
+using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Optionals;
 
@@ -20,6 +21,7 @@ public class EventStore : IAppendOnlyStore
         Optional<ulong> lastStoredEventExpectedVersion)
     {
         var eventStream = _eventSourcingDbContext.EventStreams
+            .AsNoTracking()    
             .SingleOrDefault(x => x.AggregateId == aggregateId);
 
         if (eventStream == null)
@@ -64,13 +66,19 @@ public class EventStore : IAppendOnlyStore
 
     public Optional<IEnumerable<StoredEvent>> GetStoredEvents(Guid aggregateId, ulong afterVersion, ulong maxCount)
     {
-        var eventStream = _eventSourcingDbContext.EventStreams.SingleOrDefault(x => x.AggregateId == aggregateId);
+        var eventStream = _eventSourcingDbContext
+            .EventStreams
+            .AsNoTracking()    
+            .SingleOrDefault(x => x.AggregateId == aggregateId);
+        
         if (eventStream == null)
         {
             return Optional.Nothing<IEnumerable<StoredEvent>>();
         }
 
-        var storedEvents = _eventSourcingDbContext.StoredEvents
+        var storedEvents = _eventSourcingDbContext
+            .StoredEvents
+            .AsNoTracking()    
             .Where(x => x.AggregateId == aggregateId && x.Version > afterVersion)
             .Take((int)maxCount)
             .AsEnumerable();
@@ -80,7 +88,9 @@ public class EventStore : IAppendOnlyStore
 
     public void AddSnapshot<T>(Guid aggregateId, T snapshot)
     {
-        var eventStream = _eventSourcingDbContext.EventStreams
+        var eventStream = _eventSourcingDbContext
+            .EventStreams
+            .AsNoTracking()    
             .SingleOrDefault(x => x.AggregateId == aggregateId);
 
         if (eventStream == null)
@@ -95,7 +105,9 @@ public class EventStore : IAppendOnlyStore
 
     public Optional<T> GetLatestSnapshot<T>(Guid aggregateId) where T : class
     {
-        var storedSnapshot = _eventSourcingDbContext.StoredSnapshots
+        var storedSnapshot = _eventSourcingDbContext
+            .StoredSnapshots
+            .AsNoTracking()    
             .Where(x => x.AggregateId == aggregateId)
             .OrderByDescending(x => x.CreateDate)
             .FirstOrDefault();
