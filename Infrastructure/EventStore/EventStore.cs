@@ -60,8 +60,16 @@ public class EventStore : IAppendOnlyStore
     {
         var eventStream = new EventStream(aggregateId);
         _eventSourcingDbContext.EventStreams.Add(eventStream);
+        
+        var storedEvents = new List<StoredEvent>();
+        foreach (DomainEvent @event in domainEvents)
+        {
+            var storedEvent = eventStream.RegisterStoredEvent(@event);
+            storedEvents.Add(storedEvent);
+        }
 
-        AppendToStream(eventStream.AggregateId, domainEvents, Optional.Nothing<ulong>());
+        _eventSourcingDbContext.EventStreams.Add(eventStream);
+        _eventSourcingDbContext.StoredEvents.AddRange(storedEvents);
     }
 
     public Optional<IEnumerable<StoredEvent>> GetStoredEvents(Guid aggregateId, ulong afterVersion, ulong maxCount)
