@@ -4,9 +4,9 @@ namespace Domain.People.Models.Write;
 
 public class Name : ValueObject
 {
-    public string FirstName { get; }
-    public string MiddleName { get; }
-    public string LastName { get; }
+    public string FirstName { get; private set; }
+    public string MiddleName { get; private set; }
+    public string LastName { get; private set; }
 
     public Name(string firstName, string middleName, string lastName)
     {

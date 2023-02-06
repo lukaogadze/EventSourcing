@@ -4,8 +4,8 @@ namespace Domain.People.Models.Write;
 
 public class PersonSnapshot : Entity
 {
-    public ulong Version { get; }
-    public Guid AggregateId { get; }
+    public ulong Version { get; private set; }
+    public Guid AggregateId { get; private set; }
     public Name Name { get; private set; }
     public Address Address { get; private set; }
     public DateTimeOffset BirthDate { get; private set; }

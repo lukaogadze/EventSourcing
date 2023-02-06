@@ -50,14 +50,15 @@ public class ProjectorService : IProjectorService
     private void ProcessEventsInternal(StoredEvent @event)
     {
         var aggregateId = @event.AggregateId;
-        var domainEvent = JsonService.Deserialize<DomainEvent>(@event.DomainEvent).Value;
-        switch (domainEvent)
+        switch (@event.Type)
         {
-            case PersonCreated personCreated:
+            case nameof(PersonCreated):
+                var personCreated = JsonService.Deserialize<PersonCreated>(@event.DomainEvent).Value;
                 CreatePerson(personCreated, aggregateId);
                 break;
             
-            case PersonUpdated personUpdated:
+            case nameof(PersonUpdated):
+                var personUpdated = JsonService.Deserialize<PersonUpdated>(@event.DomainEvent).Value;
                 UpdatePerson(personUpdated, aggregateId);
                 break;
         }

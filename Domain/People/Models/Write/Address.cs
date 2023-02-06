@@ -4,8 +4,8 @@ namespace Domain.People.Models.Write;
 
 public class Address : ValueObject
 {
-    public string City { get; }
-    public string Street { get; }
+    public string City { get; private set; }
+    public string Street { get; private set; }
 
     public Address(string city, string street)
     {

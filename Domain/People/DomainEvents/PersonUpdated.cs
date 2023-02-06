@@ -5,10 +5,10 @@ namespace Domain.People.DomainEvents;
 
 public class PersonUpdated : DomainEvent
 {
-    public Name Name { get; }
-    public Address Address { get; }
-    public DateTimeOffset BirthDate { get; }
-    public string Hobby { get; }
+    public Name Name { get; private set;}
+    public Address Address { get; private set;}
+    public DateTimeOffset BirthDate { get; private set;}
+    public string Hobby { get; private set; }
 
     public PersonUpdated(Name name, Address address, DateTimeOffset birthDate, string hobby)
     {

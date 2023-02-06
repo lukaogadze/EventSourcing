@@ -5,11 +5,11 @@ namespace Domain.People.DomainEvents;
 
 public class PersonCreated : DomainEvent
 {
-    public Guid Id { get; }
-    public Name Name { get; }
-    public Address Address { get; }
-    public DateTimeOffset BirthDate { get; }
-    public string Hobby { get; }
+    public Guid Id { get; private set; }
+    public Name Name { get; private set; }
+    public Address Address { get; private set; }
+    public DateTimeOffset BirthDate { get; private set; }
+    public string Hobby { get; private set; }
 
     public PersonCreated(Guid id, Name name, Address address, DateTimeOffset birthDate, string hobby)
     {

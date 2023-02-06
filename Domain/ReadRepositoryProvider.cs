@@ -4,7 +4,7 @@ namespace Domain;
 
 public class ReadRepositoryProvider
 {
-    public IPersonReadRepository People { get; }
+    public IPersonReadRepository People { get; private set; }
 
     public ReadRepositoryProvider(IPersonReadRepository people)
     {
