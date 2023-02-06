@@ -20,7 +20,7 @@ public class EventStore : IAppendOnlyStore
         Optional<ulong> lastStoredEventExpectedVersion)
     {
         var eventStream = _eventSourceDbContext.EventStreams
-            .FirstOrDefault(x => x.AggregateId == aggregateId);
+            .SingleOrDefault(x => x.AggregateId == aggregateId);
 
         if (eventStream == null)
         {
@@ -64,7 +64,7 @@ public class EventStore : IAppendOnlyStore
 
     public Optional<IEnumerable<StoredEvent>> GetStoredEvents(Guid aggregateId, ulong afterVersion, ulong maxCount)
     {
-        var eventStream = _eventSourceDbContext.EventStreams.FirstOrDefault(x => x.AggregateId == aggregateId);
+        var eventStream = _eventSourceDbContext.EventStreams.SingleOrDefault(x => x.AggregateId == aggregateId);
         if (eventStream == null)
         {
             return Optional.Nothing<IEnumerable<StoredEvent>>();
@@ -81,7 +81,7 @@ public class EventStore : IAppendOnlyStore
     public void AddSnapshot<T>(Guid aggregateId, T snapshot)
     {
         var eventStream = _eventSourceDbContext.EventStreams
-            .FirstOrDefault(x => x.AggregateId == aggregateId);
+            .SingleOrDefault(x => x.AggregateId == aggregateId);
 
         if (eventStream == null)
         {
