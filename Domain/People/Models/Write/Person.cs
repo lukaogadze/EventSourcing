@@ -15,14 +15,13 @@ public class Person : EventSourcedAggregate
     public string Hobby { get; private set; }
     
     public Person(
-        Guid id,
         Name name,
         Address address,
         DateTimeOffset birthDate,
         string hobby)
     {
         Causes(new PersonCreated(
-            id,
+            Guid.NewGuid(), 
             name,
             address,
             birthDate,
