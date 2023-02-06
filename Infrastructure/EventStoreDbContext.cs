@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
-public class EventSourceDbContext : DbContext
+public class EventStoreDbContext : DbContext
 {
     public DbSet<EventStream> EventStreams { get; set; }
     public DbSet<StoredEvent> StoredEvents { get; set; }
     public DbSet<StoredSnapshot> StoredSnapshots { get; set; }
     
-    public EventSourceDbContext(DbContextOptions<EventSourceDbContext> options) : base(options)
+    public EventStoreDbContext(DbContextOptions<EventStoreDbContext> options) : base(options)
     {
     }
 
@@ -19,7 +19,7 @@ public class EventSourceDbContext : DbContext
         modelBuilder.Entity<EventStream>().Property(x => x.AggregateId).ValueGeneratedNever();
         
         modelBuilder.Entity<StoredEvent>().HasKey(x => x.Id);
-        modelBuilder.Entity<StoredEvent>().Property(x => x.Id).ValueGeneratedNever();
+        modelBuilder.Entity<StoredEvent>().Property(x => x.Id).ValueGeneratedOnAdd();
         
         modelBuilder.Entity<StoredSnapshot>().HasKey(x => x.Id);
         modelBuilder.Entity<StoredSnapshot>().Property(x => x.Id).ValueGeneratedNever();

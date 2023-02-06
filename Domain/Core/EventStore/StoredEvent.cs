@@ -4,7 +4,7 @@ namespace Domain.Core.EventStore
 {
     public class StoredEvent
     {
-        public Guid Id { get; private set; }
+        public ulong Id { get; private set; }
         public DateTimeOffset CreateDate { get; private set; }
         public string Event { get; private set; }
         public ulong Version { get; private set; }
@@ -16,8 +16,6 @@ namespace Domain.Core.EventStore
 
         public StoredEvent(Guid aggregateId, DomainEvent @event, ulong lastStoredEventVersion)
         {
-            Id = Guid.NewGuid();
-
             if (@event == null)
             {
                 throw new ArgumentNullException(nameof(@event));

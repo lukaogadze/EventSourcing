@@ -7,11 +7,11 @@ namespace Infrastructure.EventStore;
 
 public class EventStore : IAppendOnlyStore
 {
-    private readonly EventSourceDbContext _eventSourceDbContext;
+    private readonly EventStoreDbContext _eventStoreDbContext;
 
-    public EventStore(EventSourceDbContext eventSourceDbContext)
+    public EventStore(EventStoreDbContext eventStoreDbContext)
     {
-        _eventSourceDbContext = eventSourceDbContext;
+        _eventStoreDbContext = eventStoreDbContext;
     }
 
     public void AppendToStream(
@@ -19,7 +19,7 @@ public class EventStore : IAppendOnlyStore
         IEnumerable<DomainEvent> domainEvents,
         Optional<ulong> lastStoredEventExpectedVersion)
     {
-        var eventStream = _eventSourceDbContext.EventStreams
+        var eventStream = _eventStoreDbContext.EventStreams
             .SingleOrDefault(x => x.AggregateId == aggregateId);
 
         if (eventStream == null)
@@ -39,8 +39,8 @@ public class EventStore : IAppendOnlyStore
             storedEvents.Add(storedEvent);
         }
 
-        _eventSourceDbContext.StoredEvents.AddRange(storedEvents);
-        _eventSourceDbContext.EventStreams.Update(eventStream);
+        _eventStoreDbContext.StoredEvents.AddRange(storedEvents);
+        _eventStoreDbContext.EventStreams.Update(eventStream);
     }
 
     private void CheckForConcurrency(ulong expectedVersion, ulong lastStoredEventVersion)
@@ -57,20 +57,20 @@ public class EventStore : IAppendOnlyStore
     public void CreateStream(Guid aggregateId, IEnumerable<DomainEvent> domainEvents)
     {
         var eventStream = new EventStream(aggregateId);
-        _eventSourceDbContext.EventStreams.Add(eventStream);
+        _eventStoreDbContext.EventStreams.Add(eventStream);
 
         AppendToStream(eventStream.AggregateId, domainEvents, Optional.Nothing<ulong>());
     }
 
     public Optional<IEnumerable<StoredEvent>> GetStoredEvents(Guid aggregateId, ulong afterVersion, ulong maxCount)
     {
-        var eventStream = _eventSourceDbContext.EventStreams.SingleOrDefault(x => x.AggregateId == aggregateId);
+        var eventStream = _eventStoreDbContext.EventStreams.SingleOrDefault(x => x.AggregateId == aggregateId);
         if (eventStream == null)
         {
             return Optional.Nothing<IEnumerable<StoredEvent>>();
         }
 
-        var storedEvents = _eventSourceDbContext.StoredEvents
+        var storedEvents = _eventStoreDbContext.StoredEvents
             .Where(x => x.AggregateId == aggregateId && x.Version > afterVersion)
             .Take((int)maxCount)
             .AsEnumerable();
@@ -80,7 +80,7 @@ public class EventStore : IAppendOnlyStore
 
     public void AddSnapshot<T>(Guid aggregateId, T snapshot)
     {
-        var eventStream = _eventSourceDbContext.EventStreams
+        var eventStream = _eventStoreDbContext.EventStreams
             .SingleOrDefault(x => x.AggregateId == aggregateId);
 
         if (eventStream == null)
@@ -90,12 +90,12 @@ public class EventStore : IAppendOnlyStore
 
         var storedSnapshot = new StoredSnapshot(eventStream.AggregateId, snapshot);
 
-        _eventSourceDbContext.StoredSnapshots.Add(storedSnapshot);
+        _eventStoreDbContext.StoredSnapshots.Add(storedSnapshot);
     }
 
     public Optional<T> GetLatestSnapshot<T>(Guid aggregateId) where T : class
     {
-        var storedSnapshot = _eventSourceDbContext.StoredSnapshots
+        var storedSnapshot = _eventStoreDbContext.StoredSnapshots
             .Where(x => x.AggregateId == aggregateId)
             .OrderByDescending(x => x.CreateDate)
             .FirstOrDefault();
