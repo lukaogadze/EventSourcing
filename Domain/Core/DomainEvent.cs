@@ -4,7 +4,7 @@ public abstract class DomainEvent
 {
     public DateTimeOffset OccurredOn { get; }
 
-    public DomainEvent()
+    protected DomainEvent()
     {
         OccurredOn = DateTimeOffset.Now;
     } 
