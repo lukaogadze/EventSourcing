@@ -12,20 +12,17 @@ namespace Infrastructure.Services;
 public class ProjectorService : IProjectorService
 {
     private readonly ReadRepositoryProvider _readRepositoryProvider;
-    private readonly WriteRepositoryProvider _writeRepositoryProvider;
     private readonly IEventSourceRepository _eventSourceRepository;
     private readonly ILastProcessedEventRepository _lastProcessedEventRepository;
     private readonly IProcessedEventRepository _processedEventRepository;
 
     public ProjectorService(
         ReadRepositoryProvider readRepositoryProvider,
-        WriteRepositoryProvider writeRepositoryProvider,
         IEventSourceRepository eventSourceRepository,
         ILastProcessedEventRepository lastProcessedEventRepository,
         IProcessedEventRepository processedEventRepository)
     {
         _readRepositoryProvider = readRepositoryProvider;
-        _writeRepositoryProvider = writeRepositoryProvider;
         _eventSourceRepository = eventSourceRepository;
         _lastProcessedEventRepository = lastProcessedEventRepository;
         _processedEventRepository = processedEventRepository;
