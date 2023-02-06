@@ -1,4 +1,4 @@
-namespace Domain.Core.EventStore.Projections.Repository;
+namespace Domain.Core.EventStore.Projections.Repositories;
 
 public interface IEventSourceRepository
 {

@@ -1,7 +1,7 @@
-using Domain.Core.Repository;
+using Domain.Core.Repositories;
 using Domain.People.Models.Read;
 
-namespace Domain.People.Repository.Read;
+namespace Domain.People.Repositories.Read;
 
 public interface IPersonReadRepository : IReadRepository<PersonReadModel>
 {

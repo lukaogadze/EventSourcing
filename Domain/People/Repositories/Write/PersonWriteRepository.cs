@@ -4,7 +4,7 @@ using Domain.People.Models.Write;
 using Shared;
 using Shared.Optionals;
 
-namespace Domain.People.Repository.Write;
+namespace Domain.People.Repositories.Write;
 
 public class PersonWriteRepository : IPersonWriteRepository
 {

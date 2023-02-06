@@ -1,4 +1,4 @@
-using Domain.People.Repository.Write;
+using Domain.People.Repositories.Write;
 
 namespace Domain;
 

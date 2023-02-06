@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
-public class EventStoreDbContext : DbContext
+public class EventSourcingDbContext : DbContext
 {
     public DbSet<EventStream> EventStreams { get; set; }
     public DbSet<StoredEvent> StoredEvents { get; set; }
@@ -14,7 +14,7 @@ public class EventStoreDbContext : DbContext
 
     public DbSet<ProcessedEvent> ProcessedEvents { get; set; }
     
-    public EventStoreDbContext(DbContextOptions<EventStoreDbContext> options) : base(options)
+    public EventSourcingDbContext(DbContextOptions<EventSourcingDbContext> options) : base(options)
     {
     }
 

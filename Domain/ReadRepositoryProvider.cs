@@ -1,4 +1,4 @@
-using Domain.People.Repository.Read;
+using Domain.People.Repositories.Read;
 
 namespace Domain;
 

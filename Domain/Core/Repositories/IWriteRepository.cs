@@ -1,6 +1,6 @@
 using Shared.Optionals;
 
-namespace Domain.Core.Repository;
+namespace Domain.Core.Repositories;
 
 public interface IWriteRepository<T>
 {
