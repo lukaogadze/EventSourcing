@@ -1,7 +1,9 @@
-using Domain.Core.Repository;
+using Shared.Optionals;
 
 namespace Domain.Core.EventStore.Projections.Repository;
 
-public interface ILastProcessedEventRepository : IWriteRepository<LastProcessedEvent>
+public interface ILastProcessedEventRepository
 {
+    Optional<LastProcessedEvent> Get();
+    void Update(LastProcessedEvent lastProcessedEvent);
 }
