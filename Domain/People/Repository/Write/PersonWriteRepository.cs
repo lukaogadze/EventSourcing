@@ -71,7 +71,7 @@ public class PersonWriteRepository : IPersonWriteRepository
         _appendOnlyStore.AppendToStream(person.Id, person.Changes, lastStoredEventExpectedVersion);
 
         // TODO: test this motherfucker
-        if (person.DomainEventVersion - person.StoredEventVersion >= IAppendOnlyStore.EventCountBetweenSnapshots)
+        if (person.DomainEventVersion - person.StoredEventVersion >= IAppendOnlyStore.MinimumEventCountBetweenSnapshots)
         {
             SaveSnapshot(person);
         }
