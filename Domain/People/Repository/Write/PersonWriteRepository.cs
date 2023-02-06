@@ -61,7 +61,7 @@ public class PersonWriteRepository : IPersonWriteRepository
             Create(person);
         }
     }
-    
+
     public void Update(Person person)
     {
         var lastStoredEventExpectedVersion = person.StoredEventVersion == 0
@@ -70,8 +70,7 @@ public class PersonWriteRepository : IPersonWriteRepository
 
         _appendOnlyStore.AppendToStream(person.Id, person.Changes, lastStoredEventExpectedVersion);
 
-        // TODO: test this motherfucker
-        if (person.DomainEventVersion - person.StoredEventVersion >= IAppendOnlyStore.MinimumEventCountBetweenSnapshots)
+        if (person.DomainEventVersion - person.StoredSnapshotVersion >= IAppendOnlyStore.MinimumEventCountBetweenSnapshots)
         {
             SaveSnapshot(person);
         }

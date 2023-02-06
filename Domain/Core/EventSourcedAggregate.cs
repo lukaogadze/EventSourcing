@@ -8,4 +8,5 @@ public abstract class EventSourcedAggregate : Entity
     public abstract ReadOnlyCollection<DomainEvent> Changes { get; }
     public ulong DomainEventVersion { get; protected set; }
     public ulong StoredEventVersion { get; protected set; }
+    public ulong StoredSnapshotVersion { get; protected set; }
 }

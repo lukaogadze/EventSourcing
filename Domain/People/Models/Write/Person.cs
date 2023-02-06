@@ -50,6 +50,8 @@ public class Person : EventSourcedAggregate
     {
         DomainEventVersion = personSnapshot.Version;
         StoredEventVersion = personSnapshot.Version;
+        
+        StoredSnapshotVersion = personSnapshot.Version;
 
         Id = personSnapshot.AggregateId;
         Name = personSnapshot.Name;
