@@ -10,18 +10,17 @@ public static class Program
 {
     public static void Main()
     {
-        using var context = new EventSourcingDbContext();
-
-        IProjectorService projectorService = new ProjectorService(
-            new ReadRepositoryProvider(new PersonReadRepository(context)),
-            new EventSourceRepository(context),
-            new LastProcessedEventRepository(context),
-            new ProcessedEventRepository(context)
-        );
-
         Console.WriteLine("--- Projector Is Running ---");
         while (true)
         {
+            using var context = new EventSourcingDbContext();
+            IProjectorService projectorService = new ProjectorService(
+                new ReadRepositoryProvider(new PersonReadRepository(context)),
+                new EventSourceRepository(context),
+                new LastProcessedEventRepository(context),
+                new ProcessedEventRepository(context)
+            );
+
             projectorService.ProcessEvents();
             context.SaveChanges();
             Thread.Sleep(2000);
