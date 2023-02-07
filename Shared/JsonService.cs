@@ -28,7 +28,7 @@ public static class JsonService
 
         public static string Serialize<T>(T value)
         {
-            return JsonSerializer.Serialize(value, Options);
+            return JsonSerializer.Serialize(value, value.GetType(), Options);
         }
         
         
@@ -52,7 +52,7 @@ public static class JsonService
         public static async Task<string> SerializeAsync<T>(T value)
         {
             using var stream = new MemoryStream() { Position = 0 };
-            await JsonSerializer.SerializeAsync<T>(stream, value, Options);
+            await JsonSerializer.SerializeAsync(stream, value, value.GetType(), Options);
             using var streamReader = new StreamReader(stream);
             return await streamReader.ReadToEndAsync();
         }
