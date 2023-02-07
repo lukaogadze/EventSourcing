@@ -19,6 +19,7 @@ public static class Program
             new ProcessedEventRepository(context)
         );
 
+        Console.WriteLine("--- Projector Is Running ---");
         while (true)
         {
             projectorService.ProcessEvents();
