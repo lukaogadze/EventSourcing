@@ -23,6 +23,7 @@ public static class Program
 
             projectorService.ProcessEvents();
             context.SaveChanges();
+            context.Dispose();
             Thread.Sleep(2000);
         }
     }
