@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using Shared.Optionals;
@@ -13,14 +14,14 @@ public static class JsonService
         TypeInfoResolver = new CustomTypeInfoResolver()
     };
 
-    private static readonly List<Type> Types = GetTypes();
+    private static readonly Dictionary<string, Type> Types = GetTypes();
 
-    private static List<Type> GetTypes()
+    private static Dictionary<string, Type> GetTypes()
     {
         var types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
-            .Where(x => x.IsClass && x.FullName.StartsWith("Domain"))
-            .ToList();
+            .Where(x => x.IsClass && x.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) == null && x.FullName.StartsWith("Domain"))
+            .ToDictionary(x => x.Name, x => x);
 
 
         return types;
@@ -35,7 +36,7 @@ public static class JsonService
 
         if (!string.IsNullOrWhiteSpace(concreteClassTypeName))
         {
-            var type = Types.First(x => x.Name == concreteClassTypeName);
+            var type = Types[concreteClassTypeName];
             var result = JsonSerializer.Deserialize(json, type, Options);
 
             return Optional.Something((T)result);
@@ -76,7 +77,7 @@ public static class JsonService
 
         if (!string.IsNullOrWhiteSpace(concreteClassTypeName))
         {
-            var type = Types.First(x => x.Name == concreteClassTypeName);
+            var type = Types[concreteClassTypeName];
             var result = await JsonSerializer.DeserializeAsync(stream, type, Options);
             return Optional.Something((T)result);
         }
