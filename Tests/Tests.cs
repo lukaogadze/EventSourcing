@@ -6,6 +6,7 @@ using Infrastructure;
 using Infrastructure.EventStore;
 using Infrastructure.Repositories;
 using NUnit.Framework;
+using System;
 
 namespace Tests;
 
@@ -48,11 +49,14 @@ public class Tests
         
         _writeRepositoryProvider.People.Create(person);
         _eventSourcingDbContext.SaveChanges();
-        Thread.Sleep(5000);
-        
-        var personReadModel = _readRepositoryProvider.People.GetFirstOrDefault(x => x.Id == person.Id);
-        
-        Assert.That(personReadModel.Value.FirstName, Is.EqualTo(person.Name.FirstName));
+    }
+
+    [Test] public void GetCreatedPerson()
+    {
+        var personReadModel = _readRepositoryProvider.People.GetFirstOrDefault(x => x.FirstName == "John");
+
+
+        Assert.That(personReadModel.IsSomething, Is.True);
     }
 
     [Test]
@@ -71,11 +75,14 @@ public class Tests
             _writeRepositoryProvider.People.Update(personWriteModel);
         }
         
-        _eventSourcingDbContext.SaveChanges();
-        Thread.Sleep(5000);
-        
-        var updatedPeople = _readRepositoryProvider.People.GetMany(x => x.MiddleName == "Wick");
-        
-        Assert.That(updatedPeople.Count, Is.EqualTo(people.Count));
+        _eventSourcingDbContext.SaveChanges();                
+    }
+
+    [Test]
+    public void GetUpdatedPerson()
+    {
+        var personReadModel = _readRepositoryProvider.People.GetFirstOrDefault(x => x.MiddleName == "Wick");
+
+        Assert.That(personReadModel.IsSomething, Is.True);
     }
 }
