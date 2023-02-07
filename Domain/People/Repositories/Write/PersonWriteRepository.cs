@@ -18,7 +18,7 @@ public class PersonWriteRepository : IPersonWriteRepository
     public Optional<Person> FindBy(Guid id)
     {
         ulong afterVersion = 0;
-        const ulong eventCount = ulong.MaxValue;
+        const int eventCount = int.MaxValue;
 
         Optional<PersonSnapshot> latestSnapshot = _appendOnlyStore.GetLatestSnapshot<PersonSnapshot>(id);
         if (latestSnapshot.IsSomething)

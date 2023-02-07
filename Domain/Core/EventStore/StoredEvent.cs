@@ -28,6 +28,7 @@ namespace Domain.Core.EventStore
             }
 
             CreateDate = @event.OccurredOn;
+            Type = @event.Type;
             DomainEvent = JsonService.Serialize(@event);
 
 
