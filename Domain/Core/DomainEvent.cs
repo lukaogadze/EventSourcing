@@ -1,6 +1,6 @@
 namespace Domain.Core;
 
-public abstract class DomainEvent
+public class DomainEvent
 {
     public string Type { get; protected set; }
     public DateTimeOffset OccurredOn { get; protected set; }
