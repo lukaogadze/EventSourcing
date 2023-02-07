@@ -6,86 +6,117 @@ using Shared.Optionals;
 namespace Shared;
 
 public static class JsonService
+{
+    private static readonly JsonSerializerOptions Options = new()
     {
-        private static readonly JsonSerializerOptions Options = new()
-        {
-            IncludeFields = true,
-            TypeInfoResolver = new CustomTypeInfoResolver()
-        };
-        
-        public static Optional<T> Deserialize<T>(string json)
-        {
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return Optional.Nothing<T>();
-            }
+        IncludeFields = true,
+        TypeInfoResolver = new CustomTypeInfoResolver()
+    };
 
+    private static readonly List<Type> Types = GetTypes();
+
+    private static List<Type> GetTypes()
+    {
+        var types = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(s => s.GetTypes())
+            .Where(x => x.IsClass && x.FullName.StartsWith("Domain"))
+            .ToList();
+
+
+        return types;
+    }
+
+    public static Optional<T> Deserialize<T>(string json, string concreteClassTypeName = null)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return Optional.Nothing<T>();
+        }
+
+        if (!string.IsNullOrWhiteSpace(concreteClassTypeName))
+        {
+            var type = Types.First(x => x.Name == concreteClassTypeName);
+            var result = JsonSerializer.Deserialize(json, type, Options);
+
+            return Optional.Something((T)result);
+        }
+        else
+        {
             var result = JsonSerializer.Deserialize<T>(json, Options);
-
             return Optional.Something(result);
         }
+    }
 
 
-        public static string Serialize<T>(T value)
+    public static string Serialize(object value)
+    {
+        return JsonSerializer.Serialize(value, value.GetType(), Options);
+    }
+
+    public static async Task<string> SerializeAsync(object value)
+    {
+        using var stream = new MemoryStream() { Position = 0 };
+        await JsonSerializer.SerializeAsync(stream, value, value.GetType(), Options);
+        using var streamReader = new StreamReader(stream);
+        return await streamReader.ReadToEndAsync();
+    }
+
+
+    public static async ValueTask<Optional<T>> DeserializeAsync<T>(string json, string concreteClassTypeName = null)
+    {
+        if (string.IsNullOrWhiteSpace(json))
         {
-            return JsonSerializer.Serialize(value, value.GetType(), Options);
+            return await ValueTask.FromResult(Optional.Nothing<T>());
         }
-        
-        
-        public static async ValueTask<Optional<T>> DeserializeAsync<T>(string json)
+
+        using var stream = new MemoryStream() { Position = 0 };
+        await using var streamWriter = new StreamWriter(stream);
+        await streamWriter.WriteAsync(json);
+        await streamWriter.FlushAsync();
+
+        if (!string.IsNullOrWhiteSpace(concreteClassTypeName))
         {
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return await ValueTask.FromResult(Optional.Nothing<T>());
-            }
-
-            using var stream = new MemoryStream() { Position = 0 };
-            await using var streamWriter = new StreamWriter(stream);
-            await streamWriter.WriteAsync(json);
-            await streamWriter.FlushAsync();
-
+            var type = Types.First(x => x.Name == concreteClassTypeName);
+            var result = await JsonSerializer.DeserializeAsync(stream, type, Options);
+            return Optional.Something((T)result);
+        }
+        else
+        {
             var result = await JsonSerializer.DeserializeAsync<T>(stream, Options);
 
             return Optional.Something(result);
         }
-        
-        public static async Task<string> SerializeAsync<T>(T value)
-        {
-            using var stream = new MemoryStream() { Position = 0 };
-            await JsonSerializer.SerializeAsync(stream, value, value.GetType(), Options);
-            using var streamReader = new StreamReader(stream);
-            return await streamReader.ReadToEndAsync();
-        }
     }
+}
 
-    public class CustomTypeInfoResolver : DefaultJsonTypeInfoResolver
+public class CustomTypeInfoResolver : DefaultJsonTypeInfoResolver
+{
+    public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
-        {
-            JsonTypeInfo jsonTypeInfo = base.GetTypeInfo(type, options);
+        JsonTypeInfo jsonTypeInfo = base.GetTypeInfo(type, options);
 
-            if (jsonTypeInfo.Kind == JsonTypeInfoKind.Object)
+        if (jsonTypeInfo.Kind == JsonTypeInfoKind.Object)
+        {
+            foreach (var jsonPropertyInfo in jsonTypeInfo.Properties)
             {
-                foreach (var jsonPropertyInfo in jsonTypeInfo.Properties)
+                var propertyName = jsonPropertyInfo.Name;
+
+                jsonPropertyInfo.Set ??= (@object, value) =>
                 {
-                    var propertyName = jsonPropertyInfo.Name;
-                    
-                    jsonPropertyInfo.Set ??= (@object, value) =>
-                    {
-                        @object.GetType().GetProperty(propertyName)?.SetValue(@object, value);
-                    };
-                }
-                
-                if (jsonTypeInfo.CreateObject is null)
-                {
-                    if (jsonTypeInfo.Type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).Length == 0)
-                    {
-                        // The type doesn't have public constructors
-                        jsonTypeInfo.CreateObject = () => Activator.CreateInstance(jsonTypeInfo.Type, true);
-                    }                    
-                }
+                    @object.GetType().GetProperty(propertyName)?.SetValue(@object, value);
+                };
             }
 
-            return jsonTypeInfo;
+            if (jsonTypeInfo.CreateObject is null)
+            {
+                if (jsonTypeInfo.Type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).Length == 0)
+                {
+                    // The type doesn't have public constructors
+                    jsonTypeInfo.CreateObject = () => Activator.CreateInstance(jsonTypeInfo.Type, true);
+                }
+            }
         }
+
+        return jsonTypeInfo;
     }
+}
