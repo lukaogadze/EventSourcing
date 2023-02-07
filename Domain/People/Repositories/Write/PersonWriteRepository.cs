@@ -35,14 +35,14 @@ public class PersonWriteRepository : IPersonWriteRepository
         if (latestSnapshot.IsSomething)
         {
             var snapshot = latestSnapshot.Value;
-            var domainEvents = storedEvents.Value.Select(x => JsonService.Deserialize<DomainEvent>(x.DomainEvent).Value);
+            var domainEvents = storedEvents.Value.Select(x => JsonService.Deserialize<DomainEvent>(x.DomainEvent, x.Type).Value);
             var person = Person.Reconstruct(snapshot, domainEvents);
 
             return Optional.Something(person);
         }
         else
         {
-            var domainEvents = storedEvents.Value.Select(x => JsonService.Deserialize<DomainEvent>(x.DomainEvent).Value);
+            var domainEvents = storedEvents.Value.Select(x => JsonService.Deserialize<DomainEvent>(x.DomainEvent, x.Type).Value);
             var person = Person.Reconstruct(domainEvents);
 
             return Optional.Something(person);
