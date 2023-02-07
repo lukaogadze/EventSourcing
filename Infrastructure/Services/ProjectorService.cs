@@ -1,4 +1,5 @@
 using Domain;
+using Domain.Core;
 using Domain.Core.EventStore;
 using Domain.Core.EventStore.Projections;
 using Domain.Core.EventStore.Projections.Repositories;
@@ -49,15 +50,14 @@ public class ProjectorService : IProjectorService
     private void ProcessEventsInternal(StoredEvent @event)
     {
         var aggregateId = @event.AggregateId;
-        switch (@event.Type)
+        var domainEvent = JsonService.Deserialize<DomainEvent>(@event.DomainEvent, @event.Type).Value;
+        switch (domainEvent)
         {
-            case nameof(PersonCreated):
-                var personCreated = JsonService.Deserialize<PersonCreated>(@event.DomainEvent).Value;
+            case PersonCreated personCreated:
                 CreatePerson(personCreated, aggregateId);
                 break;
             
-            case nameof(PersonUpdated):
-                var personUpdated = JsonService.Deserialize<PersonUpdated>(@event.DomainEvent).Value;
+            case PersonUpdated personUpdated:
                 UpdatePerson(personUpdated, aggregateId);
                 break;
         }
