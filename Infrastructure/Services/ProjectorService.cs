@@ -1,5 +1,4 @@
 using Domain;
-using Domain.Core;
 using Domain.Core.EventStore;
 using Domain.Core.EventStore.Projections;
 using Domain.Core.EventStore.Projections.Repositories;
