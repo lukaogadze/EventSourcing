@@ -72,7 +72,7 @@ public class EventStore : IAppendOnlyStore
         _eventSourcingDbContext.StoredEvents.AddRange(storedEvents);
     }
 
-    public Optional<IEnumerable<StoredEvent>> GetStoredEvents(Guid aggregateId, ulong afterVersion, ulong maxCount)
+    public Optional<IEnumerable<StoredEvent>> GetStoredEvents(Guid aggregateId, ulong afterVersion, int maxCount)
     {
         var eventStream = _eventSourcingDbContext
             .EventStreams
@@ -88,7 +88,7 @@ public class EventStore : IAppendOnlyStore
             .StoredEvents
             .AsNoTracking()    
             .Where(x => x.AggregateId == aggregateId && x.Version > afterVersion)
-            .Take((int)maxCount)
+            .Take(maxCount)
             .AsEnumerable();
 
         return Optional.Something(storedEvents);
